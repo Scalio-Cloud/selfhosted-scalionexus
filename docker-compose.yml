@@ -10,7 +10,7 @@ services:
       - .env
 
   backend:
-    image: ghcr.io/scalio-cloud/selfhosted-entraconsole-backend:latest
+    image: ghcr.io/scalio-cloud/selfhosted-scalionexus-backend:latest
     restart: unless-stopped
     depends_on:
       - mongo
@@ -21,7 +21,7 @@ services:
 
 
   frontend:
-    image: ghcr.io/scalio-cloud/selfhosted-entraconsole-frontend:latest
+    image: ghcr.io/scalio-cloud/selfhosted-scalionexus-frontend:latest
     restart: unless-stopped
     depends_on:
       - backend
