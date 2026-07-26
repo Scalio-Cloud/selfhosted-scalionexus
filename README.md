@@ -4,6 +4,8 @@ This repository contains the Docker Compose configuration for self-hosting **Sca
 
 For more detailed information, documentation, and updates, please visit our official website at [scalionexus.com](https://www.scalionexus.com).
 
+🌐 Try the Live Demo: You can test the full features of Scalio Nexus directly without installation at https://demo.scalionexus.com.
+
 ## Prerequisites
 
 Before starting the installation, ensure that the following components are installed on your host system:
