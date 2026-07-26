@@ -2,16 +2,22 @@ services:
   mongo:
     image: mongo:7
     restart: unless-stopped
-    volumes:      
-      - /data/mongo-data:/data/db
+    volumes:
+      # ÄNDERUNG: Speichert die Daten direkt im Host-Dateisystem im Ordner "mongo-data"
+      - ./mongo-data:/data/db
     expose:
       - "27017"
     env_file:
       - .env
 
   backend:
-    image: ghcr.io/scalio-cloud/selfhosted-scalionexus-backend:latest
+    image: ghcr.io/scalio-cloud/selfhosted-scalionexus-backend:${APP_VERSION:-latest}
     restart: unless-stopped
+    networks:
+      - proxy_network
+      - default # Behalten, damit das Frontend intern noch mit der Mongo/Backend sprechen kann
+    volumes:
+      - ./.env:/app/.env
     depends_on:
       - mongo
     expose:
@@ -19,16 +25,28 @@ services:
     env_file:
       - .env
 
-
   frontend:
-    image: ghcr.io/scalio-cloud/selfhosted-scalionexus-frontend:latest
+    image: ghcr.io/scalio-cloud/selfhosted-scalionexus-frontend:${APP_VERSION:-latest}
     restart: unless-stopped
+    networks:
+      - proxy_network
+      - default # Behalten, damit das Frontend intern noch mit der Mongo/Backend sprechen kann
     depends_on:
       - backend
     expose:
       - "80"
     env_file:
       - .env
+
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --http-api-update --http-api-token ${WATCHTOWER_HTTP_API_TOKEN}
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
 
   proxy:
     image: nginx:alpine
@@ -50,3 +68,8 @@ services:
       - ./certbot/conf:/etc/letsencrypt:rw
       - ./certbot/www:/var/www/certbot:rw
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done'"
+
+networks:
+  proxy_network:
+    external: true # Sagt Docker, dass das Netzwerk schon existiert
+
