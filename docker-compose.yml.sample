@@ -17,7 +17,7 @@ services:
       - proxy_network
       - default # Behalten, damit das Frontend intern noch mit der Mongo/Backend sprechen kann
     volumes:
-      - ./.env:/app/.env
+      - ./:/app/config
     depends_on:
       - mongo
     expose:
