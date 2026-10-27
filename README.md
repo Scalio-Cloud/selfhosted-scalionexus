@@ -35,13 +35,19 @@ cd selfhosted-scalionexus
 Create or edit the `.env` file in the root directory and update the values to match your environment:
 
 ```env
-JWT_SECRET="your_secure_random_secret"
+JWT_SECRET="<output of: openssl rand -hex 32>"
 PUBLIC_URL="https://scalionexus.yourdomain.com"
 MONGO_URL="mongodb://mongo:27017"
 DB_NAME="scalionexus"
 LICENSE_KEY="your_license_key"
-CORS_ORIGINS="*"
+CORS_ORIGINS="https://scalionexus.yourdomain.com"
 ```
+
+Create the secret with `openssl rand -hex 32` and paste the output; never use a value from a sample or a guide.
+The secret signs every sign-in session: anybody who knows it can sign in as any user. Nexus refuses a value
+that is shorter than 32 characters or comes from a sample (from the next release on) and then uses a random
+secret of its own, which signs everybody out once.
+`CORS_ORIGINS` only needs your own address (or stays empty), because the frontend proxies `/api` itself.
 
 > **Important:** Replace `scalionexus.domain.com` in both your `.env` file and `nginx.conf` with your actual domain name.
 
